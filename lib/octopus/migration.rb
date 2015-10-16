@@ -89,11 +89,7 @@ module Octopus
     end
 
     def migrations_with_octopus(shard_agnostic = false)
-      connection = ActiveRecord::Base.connection
-      migrations = migrations_without_octopus
-      return migrations if !connection.is_a?(Octopus::Proxy) || shard_agnostic
-
-      migrations.select { |m| m.shards.include?(connection.current_shard.to_sym) }
+      migrations_without_octopus
     end
 
     module ClassMethods
