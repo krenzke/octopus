@@ -98,37 +98,19 @@ module Octopus
 
     module ClassMethods
       def migrate_with_octopus(migrations_paths, target_version = nil, &block)
-        return migrate_without_octopus(migrations_paths, target_version, &block) unless connection.is_a?(Octopus::Proxy)
-
-        connection.send_queries_to_multiple_shards(connection.shard_names) do
-          migrate_without_octopus(migrations_paths, target_version, &block)
-        end
+        return migrate_without_octopus(migrations_paths, target_version, &block) if connection.current_shard == :master
       end
 
       def up_with_octopus(migrations_paths, target_version = nil, &block)
-        return up_without_octopus(migrations_paths, target_version, &block) unless connection.is_a?(Octopus::Proxy)
-        return up_without_octopus(migrations_paths, target_version, &block) unless connection.current_shard == :master
-
-        connection.send_queries_to_multiple_shards(connection.shard_names) do
-          up_without_octopus(migrations_paths, target_version, &block)
-        end
+        return up_without_octopus(migrations_paths, target_version, &block) if connection.current_shard == :master
       end
 
       def down_with_octopus(migrations_paths, target_version = nil, &block)
-        return down_without_octopus(migrations_paths, target_version, &block) unless connection.is_a?(Octopus::Proxy)
-        return down_without_octopus(migrations_paths, target_version, &block) unless connection.current_shard == :master
-
-        connection.send_queries_to_multiple_shards(connection.shard_names) do
-          down_without_octopus(migrations_paths, target_version, &block)
-        end
+        return down_without_octopus(migrations_paths, target_version, &block) if connection.current_shard == :master
       end
 
       def run_with_octopus(direction, migrations_paths, target_version)
-        return run_without_octopus(direction, migrations_paths, target_version) unless connection.is_a?(Octopus::Proxy)
-
-        connection.send_queries_to_multiple_shards(connection.shard_names) do
-          run_without_octopus(direction, migrations_paths, target_version)
-        end
+        return run_without_octopus(direction, migrations_paths, target_version) if connection.current_shard == :master
       end
 
       private
