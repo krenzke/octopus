@@ -94,19 +94,19 @@ module Octopus
 
     module ClassMethods
       def migrate_with_octopus(migrations_paths, target_version = nil, &block)
-        return migrate_without_octopus(migrations_paths, target_version, &block) if connection.try(:current_shard) == :master
+        return migrate_without_octopus(migrations_paths, target_version, &block) if !Octopus.enabled? || connection.try(:current_shard) == :master
       end
 
       def up_with_octopus(migrations_paths, target_version = nil, &block)
-        return up_without_octopus(migrations_paths, target_version, &block) if connection.try(:current_shard) == :master
+        return up_without_octopus(migrations_paths, target_version, &block) if !Octopus.enabled? || connection.try(:current_shard) == :master
       end
 
       def down_with_octopus(migrations_paths, target_version = nil, &block)
-        return down_without_octopus(migrations_paths, target_version, &block) if connection.try(:current_shard) == :master
+        return down_without_octopus(migrations_paths, target_version, &block) if !Octopus.enabled? || connection.try(:current_shard) == :master
       end
 
       def run_with_octopus(direction, migrations_paths, target_version)
-        return run_without_octopus(direction, migrations_paths, target_version) if connection.try(:current_shard) == :master
+        return run_without_octopus(direction, migrations_paths, target_version) if !Octopus.enabled? || connection.try(:current_shard) == :master
       end
 
       private
